@@ -1,23 +1,38 @@
-import logo from './logo.svg';
+import { createRef } from "react"
 import './App.css';
 
 function App() {
+  const fileInput = createRef();
+  const handleSubmit = async (event) => {
+    // Prevent the value and behave like single page application
+    event.preventDefault();
+    const formData = new FormData();
+    // formData will take key/value pairs first it takes name of the input field 
+    // Second it takes the second the ref value of the files
+    formData.set("avatar", fileInput.current.files[0])
+    try {
+      const response = await fetch("/profile", {
+        method: "POST",
+        body: formData
+      })
+      // const parsedData = await response.json();
+      // Handling file upload succeed or not
+      if (response.ok) {
+        alert("File Uploaded");
+      } else {
+        console.error("Some error occured")
+      }
+    } catch (err) {
+      console.error(err.message)
+    }
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>File Upload in React</h1>
+      <form onSubmit={handleSubmit}>
+        <input type="file" name="avatar" ref={fileInput} />
+        <input type="submit" value="Upload" />
+      </form>
     </div>
   );
 }
